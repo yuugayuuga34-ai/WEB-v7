@@ -243,34 +243,59 @@ function spin() {
     deg += speed;
 
     wheel.style.transform = `rotate(${deg}deg)`;
-
-    if (speed < 0.5) {
-  clearInterval(interval);
+‎
+Original file line number	Diff line number	Diff line change
+@@ -218,48 +218,62 @@
+  if (mode === "fixed") {
+    targetIndex = forcedIndex;
+  } else {
+    targetIndex = Math.floor(Math.random() * items.length);
+  }
 
   const step = 360 / items.length;
 
-  if (mode === "fixed") {
-    // 📌 固定モード：ここでだけ補正
-    const targetAngle = 90 - (forcedIndex * step + step / 2);
+  const targetAngle = 90 - (targetIndex * step + step / 2);
 
+  let speed = 40;
+
+  const interval = setInterval(() => {
+    speed *= 0.985;
+    deg += speed;
 
     document.getElementById("wheel").style.transform =
       `rotate(${deg}deg)`;
 
+  if (speed < 0.5) {
+  clearInterval(interval);
+
+  const step = 360 / items.length;
+
+  let currentDeg = (deg % 360 + 360) % 360;
+  if (mode === "fixed") {
+    // 📌 固定モード：ここでだけ補正
+    const targetAngle = 90 - (forcedIndex * step + step / 2);
+    deg = Math.floor(deg / 360) * 360 + targetAngle;
+    document.getElementById("wheel").style.transform =
+      `rotate(${deg}deg)`;
+
+  // 🔥 ここが修正ポイント
+  let index = Math.floor((360 - currentDeg + 90) / step) % items.length;
     document.getElementById("result").textContent =
       "結果: " + items[forcedIndex];
 
+  document.getElementById("result").textContent =
+    "結果: " + items[index];
   } else {
     // 🔀 ランダムモード：見たまま結果
     let currentDeg = (deg % 360 + 360) % 360;
-
     let index = Math.floor((360 - currentDeg + 90) / step) % items.length;
-
     document.getElementById("result").textContent =
       "結果: " + items[index];
   }
-    }
-}
+  }
+  }, 20);
+  }
+    
 
 // リセット
 function resetWheel() {
