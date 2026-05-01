@@ -213,6 +213,8 @@ function updateStatus() {
 
 // 回転（完全一致）
 function spin() {
+  const step = 360 / items.length;
+
   let targetIndex;
 
   if (mode === "fixed") {
@@ -221,9 +223,12 @@ function spin() {
     targetIndex = Math.floor(Math.random() * items.length);
   }
 
-  const step = 360 / items.length;
-
+  // 🔥 最初からゴール決める
   const targetAngle = 90 - (targetIndex * step + step / 2);
+
+  // 今の角度からそこまで回す
+  const fullSpins = 5 * 360;
+  const goal = deg + fullSpins + (targetAngle - (deg % 360));
 
   let speed = 40;
 
@@ -234,34 +239,20 @@ function spin() {
     document.getElementById("wheel").style.transform =
       `rotate(${deg}deg)`;
 
-  if (speed < 0.5) {
-  clearInterval(interval);
+    if (speed < 0.3) {
+      clearInterval(interval);
 
-  const step = 360 / items.length;
+      // 🔥 完全一致で止める
+      deg = goal;
 
-  if (mode === "fixed") {
-    // 📌 固定モード：ここでだけ補正
-    const targetAngle = 90 - (forcedIndex * step + step / 2);
+      document.getElementById("wheel").style.transform =
+        `rotate(${deg}deg)`;
 
-    deg = targetAngle;
-
-    document.getElementById("wheel").style.transform =
-      `rotate(${deg}deg)`;
-
-    document.getElementById("result").textContent =
-      "結果: " + items[forcedIndex];
-
-  } else {
-    // 🔀 ランダムモード：見たまま結果
-    let currentDeg = (deg % 360 + 360) % 360;
-
-    let index = Math.floor((360 - currentDeg + 90) / step) % items.length;
-
-    document.getElementById("result").textContent =
-      "結果: " + items[index];
-  }
-  }
+      document.getElementById("result").textContent =
+        "結果: " + items[targetIndex];
+    }
   }, 20);
+}
 }
 // リセット
 function resetWheel() {
