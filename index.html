@@ -244,17 +244,33 @@ function spin() {
 
     wheel.style.transform = `rotate(${deg}deg)`;
 
-    if (speed < 0.3) {
-      clearInterval(interval);
+    if (speed < 0.5) {
+  clearInterval(interval);
 
-      // 🔥 最後にピタッと合わせる
-      deg = goal;
-      wheel.style.transform = `rotate(${deg}deg)`;
+  const step = 360 / items.length;
 
-      document.getElementById("result").textContent =
-        "結果: " + items[targetIndex];
+  if (mode === "fixed") {
+    // 📌 固定モード：ここでだけ補正
+    const targetAngle = 90 - (forcedIndex * step + step / 2);
+
+    deg = Math.floor(deg / 360) * 360 + targetAngle;
+
+    document.getElementById("wheel").style.transform =
+      `rotate(${deg}deg)`;
+
+    document.getElementById("result").textContent =
+      "結果: " + items[forcedIndex];
+
+  } else {
+    // 🔀 ランダムモード：見たまま結果
+    let currentDeg = (deg % 360 + 360) % 360;
+
+    let index = Math.floor((360 - currentDeg + 90) / step) % items.length;
+
+    document.getElementById("result").textContent =
+      "結果: " + items[index];
+  }
     }
-  }, 20);
 }
 
 // リセット
