@@ -235,16 +235,18 @@ function spin() {
       `rotate(${deg}deg)`;
 
     if (speed < 0.5) {
-      clearInterval(interval);
+  clearInterval(interval);
 
-      const fullSpins = 5 * 360;
-      
+  const step = 360 / items.length;
 
-      document.getElementById("wheel").style.transform =
-        `rotate(${deg}deg)`;
+  // 今の回転角度を0〜360に変換
+  let currentDeg = (deg % 360 + 360) % 360;
 
-      document.getElementById("result").textContent =
-        "結果: " + items[targetIndex];
+  // 右向きの針に合わせた計算
+  let index = Math.floor((360 - currentDeg) / step) % items.length;
+
+  document.getElementById("result").textContent =
+    "結果: " + items[index];
     }
   }, 20);
 }
