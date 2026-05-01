@@ -225,10 +225,10 @@ function spin() {
 
   const targetAngle = 90 - (targetIndex * step + step / 2);
 
-  let speed = 30;
+  let speed = 40;
 
   const interval = setInterval(() => {
-    speed *= 0.97;
+    speed *= 0.985;
     deg += speed;
 
     document.getElementById("wheel").style.transform =
@@ -238,7 +238,7 @@ function spin() {
       clearInterval(interval);
 
       const fullSpins = 5 * 360;
-      deg = fullSpins + targetAngle;
+      
 
       document.getElementById("wheel").style.transform =
         `rotate(${deg}deg)`;
