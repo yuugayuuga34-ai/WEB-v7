@@ -253,7 +253,6 @@ function spin() {
     // 📌 固定モード：ここでだけ補正
     const targetAngle = 90 - (forcedIndex * step + step / 2);
 
-    deg = Math.floor(deg / 360) * 360 + targetAngle;
 
     document.getElementById("wheel").style.transform =
       `rotate(${deg}deg)`;
