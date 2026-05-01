@@ -239,13 +239,27 @@ function spin() {
 
   const step = 360 / items.length;
 
-  let currentDeg = (deg % 360 + 360) % 360;
+  if (mode === "fixed") {
+    // 📌 固定モード：ここでだけ補正
+    const targetAngle = 90 - (forcedIndex * step + step / 2);
 
-  // 🔥 ここが修正ポイント
-  let index = Math.floor((360 - currentDeg + 90) / step) % items.length;
+    deg = Math.floor(deg / 360) * 360 + targetAngle;
 
-  document.getElementById("result").textContent =
-    "結果: " + items[index];
+    document.getElementById("wheel").style.transform =
+      `rotate(${deg}deg)`;
+
+    document.getElementById("result").textContent =
+      "結果: " + items[forcedIndex];
+
+  } else {
+    // 🔀 ランダムモード：見たまま結果
+    let currentDeg = (deg % 360 + 360) % 360;
+
+    let index = Math.floor((360 - currentDeg + 90) / step) % items.length;
+
+    document.getElementById("result").textContent =
+      "結果: " + items[index];
+  }
   }
   }, 20);
 }
