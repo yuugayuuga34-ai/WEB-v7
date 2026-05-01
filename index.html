@@ -234,20 +234,19 @@ function spin() {
     document.getElementById("wheel").style.transform =
       `rotate(${deg}deg)`;
 
-    if (speed < 0.5) {
+  if (speed < 0.5) {
   clearInterval(interval);
 
   const step = 360 / items.length;
 
-  // 今の回転角度を0〜360に変換
   let currentDeg = (deg % 360 + 360) % 360;
 
-  // 右向きの針に合わせた計算
-  let index = Math.floor((360 - currentDeg) / step) % items.length;
+  // 🔥 ここが修正ポイント
+  let index = Math.floor((360 - currentDeg + 90) / step) % items.length;
 
   document.getElementById("result").textContent =
     "結果: " + items[index];
-    }
+  }
   }, 20);
 }
 // リセット
