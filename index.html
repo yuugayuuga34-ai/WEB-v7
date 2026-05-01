@@ -213,6 +213,7 @@ function updateStatus() {
 
 // 回転（完全一致）
 function spin() {
+  const wheel = document.getElementById("wheel");
   const step = 360 / items.length;
 
   let targetIndex;
@@ -223,12 +224,17 @@ function spin() {
     targetIndex = Math.floor(Math.random() * items.length);
   }
 
-  // 🔥 最初からゴール決める
+  // 🎯 ゴール角度（右向き針対応）
   const targetAngle = 90 - (targetIndex * step + step / 2);
 
-  // 今の角度からそこまで回す
-  const fullSpins = 5 * 360;
-  const goal = deg + fullSpins + (targetAngle - (deg % 360));
+  // 今の角度を取得
+  let current = deg % 360;
+
+  // しっかり回転させる
+  let spins = 5 * 360;
+
+  // ゴール計算（ここが安定版）
+  let goal = deg + spins + (targetAngle - current);
 
   let speed = 40;
 
@@ -236,17 +242,14 @@ function spin() {
     speed *= 0.985;
     deg += speed;
 
-    document.getElementById("wheel").style.transform =
-      `rotate(${deg}deg)`;
+    wheel.style.transform = `rotate(${deg}deg)`;
 
     if (speed < 0.3) {
       clearInterval(interval);
 
-      // 🔥 完全一致で止める
+      // 🔥 最後にピタッと合わせる
       deg = goal;
-
-      document.getElementById("wheel").style.transform =
-        `rotate(${deg}deg)`;
+      wheel.style.transform = `rotate(${deg}deg)`;
 
       document.getElementById("result").textContent =
         "結果: " + items[targetIndex];
