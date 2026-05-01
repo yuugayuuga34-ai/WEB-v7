@@ -223,8 +223,7 @@ function spin() {
 
   const step = 360 / items.length;
 
-  // ★右向き三角に完全一致させる角度
-  const targetAngle = -(targetIndex * step + step / 2);
+  const targetAngle = 90 - (targetIndex * step + step / 2);
 
   let speed = 30;
 
@@ -238,18 +237,17 @@ function spin() {
     if (speed < 0.5) {
       clearInterval(interval);
 
-      deg = Math.round(deg) + targetAngle;
+      const fullSpins = 5 * 360;
+      deg = fullSpins + targetAngle;
 
       document.getElementById("wheel").style.transform =
         `rotate(${deg}deg)`;
 
-      // ★見た目と完全一致
       document.getElementById("result").textContent =
         "結果: " + items[targetIndex];
     }
   }, 20);
 }
-
 // リセット
 function resetWheel() {
   deg = 0;
