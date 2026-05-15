@@ -1,287 +1,24 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-
-<title>Webルーレット</title>
-
-<style>
-:root{
-  --bg:#f6f1f2;
-  --text:#20242a;
-}
-
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-body{
-  margin:0;
-  background:var(--bg);
-  font-family:sans-serif;
-  color:var(--text);
-  text-align:center;
-}
-
-h1{
-  margin:22px 0 6px;
-  font-size:32px;
-  font-weight:700;
-}
-
-#wrapper{
-  width:100%;
-  max-width:860px;
-  margin:auto;
-  padding:0 10px 36px;
-}
-
-#result{
-  width:92%;
-  max-width:760px;
-  height:54px;
-  line-height:54px;
-  border-radius:14px;
-  font-size:34px;
-  margin:8px auto 14px;
-  color:#111;
-  display:none;
-}
-
-#rouletteWrap{
-  position:relative;
-  width:min(82vw,620px);
-  height:min(82vw,620px);
-  margin:0 auto 10px;
-  overflow:hidden;
-  border-radius:50%;
-}
-
-canvas{
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  background:transparent;
-
-  box-shadow:
-    0 2px 4px rgba(0,0,0,.12),
-    0 6px 14px rgba(0,0,0,.16);
-}
-
-#pointer{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-2px,-50%);
-
-  width:0;
-  height:0;
-
-  border-top:8px solid transparent;
-  border-bottom:8px solid transparent;
-  border-left:28px solid #ff1400;
-
-  z-index:5;
-}
-
-#pointerCenter{
-  position:absolute;
-  left:50%;
-  top:50%;
-
-  width:24px;
-  height:24px;
-
-  border-radius:50%;
-  background:#fff;
-  transform:translate(-50%,-50%);
-  z-index:6;
-}
-
-.buttons{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  margin:6px 0 18px;
-}
-
-button{
-  border:none;
-  border-radius:8px;
-  padding:13px 22px;
-  font-size:20px;
-  cursor:pointer;
-}
-
-#startBtn{
-  background:#0d7cff;
-  color:#fff;
-}
-
-#resetBtn{
-  background:#ea8e98;
-  color:#fff;
-}
-
-textarea{
-  width:100%;
-  height:300px;
-  margin-top:8px;
-  font-size:26px;
-  border:3px solid #222;
-  padding:14px;
-  resize:none;
-  background:#fff;
-}
-
-.hidden{
-  display:none !important;
-}
-
-#emptyBox{
-  width:min(88vw,560px);
-  height:360px;
-  border:2px solid #999;
-  border-radius:34px;
-  margin:18px auto;
-  background:#fff;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-}
-
-.arrow{
-  font-size:96px;
-}
-
-/* 隠し設定 */
-
-#secretBtn{
-  position:fixed;
-  right:12px;
-  bottom:12px;
-
-  width:46px;
-  height:46px;
-
-  border-radius:50%;
-  background:#222;
-  color:#fff;
-
-  font-size:20px;
-  z-index:999;
-}
-
-#secretPanel{
-  position:fixed;
-  right:12px;
-  bottom:70px;
-
-  width:220px;
-
-  background:#fff;
-  border-radius:16px;
-
-  padding:14px;
-
-  box-shadow:0 8px 20px rgba(0,0,0,.18);
-
-  display:none;
-
-  z-index:999;
-}
-
-#secretPanel select{
-  width:100%;
-  padding:10px;
-  font-size:18px;
-  margin-top:8px;
-}
-
-#secretPanel label{
-  display:block;
-  margin-top:10px;
-  font-size:18px;
-}
-</style>
-</head>
-
-<body>
-
-<div id="wrapper">
-
-<h1>Web ルーレット</h1>
-
-<div id="emptyBox">
-  <div>リストを入力</div>
-  <div>してください</div>
-  <div class="arrow">↓↓↓</div>
-</div>
-
-<div id="result"></div>
-
-<div id="rouletteArea" class="hidden">
-
-<div id="rouletteWrap">
-
-<canvas id="wheel" width="900" height="900"></canvas>
-
-<div id="pointer"></div>
-<div id="pointerCenter"></div>
-
-</div>
-
-<div class="buttons">
-<button id="startBtn">開始</button>
-<button id="resetBtn">リセット</button>
-</div>
-
-</div>
-
-<textarea id="names"></textarea>
-
-</div>
-
-<!-- 隠しボタン -->
-<button id="secretBtn">⚙</button>
-
-<!-- 隠し設定 -->
-<div id="secretPanel">
-
-<label>
-<input type="checkbox" id="fixedMode">
-固定モード
-</label>
-
-<select id="fixedSelect"></select>
-
-</div>
-
 <script>
-const canvas=document.getElementById("wheel");
-const ctx=canvas.getContext("2d");
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
 
-const textarea=document.getElementById("names");
+const textarea = document.getElementById("names");
 
-const emptyBox=document.getElementById("emptyBox");
-const rouletteArea=document.getElementById("rouletteArea");
+const emptyBox = document.getElementById("emptyBox");
+const rouletteArea = document.getElementById("rouletteArea");
 
-const resultBox=document.getElementById("result");
+const resultBox = document.getElementById("result");
 
-const startBtn=document.getElementById("startBtn");
-const resetBtn=document.getElementById("resetBtn");
+const startBtn = document.getElementById("startBtn");
+const resetBtn = document.getElementById("resetBtn");
 
-const secretBtn=document.getElementById("secretBtn");
-const secretPanel=document.getElementById("secretPanel");
+const secretBtn = document.getElementById("secretBtn");
+const secretPanel = document.getElementById("secretPanel");
 
-const fixedMode=document.getElementById("fixedMode");
-const fixedSelect=document.getElementById("fixedSelect");
+const fixedMode = document.getElementById("fixedMode");
+const fixedSelect = document.getElementById("fixedSelect");
 
-const BASE_COLORS=[
+const BASE_COLORS = [
 "#76ea7e",
 "#f47c6f",
 "#4868db",
@@ -289,113 +26,125 @@ const BASE_COLORS=[
 "#cb98d8"
 ];
 
-let items=[];
-let colorMap=[];
-let rotation=0;
-let spinning=false;
+let items = [];
+let colorMap = [];
+
+let rotation = 0;
+let spinning = false;
 
 function getItems(){
+
   return textarea.value
-  .split("\n")
-  .map(v=>v.trim())
-  .filter(v=>v);
+    .split("\n")
+    .map(v => v.trim())
+    .filter(v => v);
+
 }
 
 function updateFixedList(){
 
-  const arr=getItems();
+  const current = fixedSelect.value;
 
-  fixedSelect.innerHTML="";
+  fixedSelect.innerHTML = "";
 
-  arr.forEach(v=>{
+  getItems().forEach(v => {
 
-    const option=document.createElement("option");
+    const option = document.createElement("option");
 
-    option.value=v;
-    option.textContent=v;
+    option.value = v;
+    option.textContent = v;
 
     fixedSelect.appendChild(option);
 
   });
+
+  if(current){
+    fixedSelect.value = current;
+  }
+
 }
 
 function buildColorMap(count){
 
-  let arr=[];
+  const arr = [];
 
   for(let i=0;i<count;i++){
-    arr.push(BASE_COLORS[i%BASE_COLORS.length]);
+    arr.push(BASE_COLORS[i % BASE_COLORS.length]);
   }
 
   return arr;
+
 }
 
-function drawWheel(rot=0){
+function drawWheel(rot = 0){
 
-  items=getItems();
+  items = getItems();
 
   updateFixedList();
 
-  if(items.length===0){
+  if(items.length === 0){
 
     emptyBox.classList.remove("hidden");
     rouletteArea.classList.add("hidden");
-    resultBox.style.display="none";
+    resultBox.style.display = "none";
 
     return;
+
   }
 
   emptyBox.classList.add("hidden");
   rouletteArea.classList.remove("hidden");
 
-  colorMap=buildColorMap(items.length);
+  colorMap = buildColorMap(items.length);
 
   ctx.clearRect(0,0,900,900);
 
-  const cx=450;
-  const cy=450;
+  const cx = 450;
+  const cy = 450;
 
-  const radius=450;
+  const radius = 450;
 
-  const arc=Math.PI*2/items.length;
+  const arc = Math.PI * 2 / items.length;
 
   for(let i=0;i<items.length;i++){
 
-    const start=rot+i*arc;
-    const end=start+arc;
+    const start = rot + i * arc;
+    const end = start + arc;
 
     ctx.beginPath();
 
-    ctx.moveTo(cx,cy);
+    ctx.moveTo(cx, cy);
 
-    ctx.arc(cx,cy,radius,start,end);
+    ctx.arc(cx, cy, radius, start, end);
 
     ctx.closePath();
 
-    ctx.fillStyle=colorMap[i];
+    ctx.fillStyle = colorMap[i];
 
     ctx.fill();
 
     ctx.save();
 
-    ctx.translate(cx,cy);
+    ctx.translate(cx, cy);
 
-    ctx.rotate(start+arc/2);
+    ctx.rotate(start + arc / 2);
 
-    ctx.fillStyle="#000";
+    ctx.fillStyle = "#000";
 
-    ctx.font="66px sans-serif";
+    ctx.font = "66px sans-serif";
 
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-    ctx.fillText(items[i], radius*0.60, 0);
+    ctx.fillText(items[i], radius * 0.60, 0);
 
     ctx.restore();
+
   }
+
 }
 
-drawWheel();
+drawWheel(rotation);
 
 textarea.addEventListener("input", ()=>{
 
@@ -403,122 +152,163 @@ textarea.addEventListener("input", ()=>{
 
 });
 
-secretBtn.onclick=()=>{
+secretBtn.addEventListener("click", ()=>{
 
-  if(secretPanel.style.display==="block"){
-    secretPanel.style.display="none";
+  if(secretPanel.style.display === "block"){
+    secretPanel.style.display = "none";
   }else{
-    secretPanel.style.display="block";
+    secretPanel.style.display = "block";
   }
 
-};
+});
 
 function easeOutQuint(t){
-  return 1 - Math.pow(1-t,5);
+
+  return 1 - Math.pow(1 - t, 5);
+
 }
 
 startBtn.addEventListener("click", ()=>{
 
   if(spinning) return;
 
-  items=getItems();
+  items = getItems();
 
-  if(items.length===0) return;
+  if(items.length === 0) return;
 
-  spinning=true;
+  spinning = true;
 
-  const arc=Math.PI*2/items.length;
+  const arc = Math.PI * 2 / items.length;
 
   let winnerIndex;
 
   // 固定モード
   if(fixedMode.checked){
 
-    const fixedValue=fixedSelect.value;
+    const fixedValue = fixedSelect.value;
 
-    winnerIndex=items.indexOf(fixedValue);
+    winnerIndex = items.indexOf(fixedValue);
 
-    if(winnerIndex===-1){
-      winnerIndex=0;
+    if(winnerIndex === -1){
+      winnerIndex = 0;
     }
 
   }else{
 
-    winnerIndex=Math.floor(Math.random()*items.length);
+    winnerIndex = Math.floor(Math.random() * items.length);
 
   }
 
   /*
-    ▼ 超重要 ▼
-
-    pointerは「左向き」だから
-    π が中心位置
-
-    ここを完全一致計算
+    針は左向き
+    = π rad
   */
 
-  const pointerAngle=Math.PI;
+  const pointerAngle = Math.PI;
 
-  // セグメント中央
-  const targetCenter=
-    winnerIndex*arc + arc/2;
+  /*
+    セグメント中央角度
+  */
 
-  // 完全一致回転
-  const finalNormalized=
-    pointerAngle - targetCenter;
+  const targetAngle =
+    (winnerIndex * arc) + (arc / 2);
 
-  // 追加回転
-  const extraTurns=
-    Math.PI*2*10;
+  /*
+    最終回転角
+  */
 
-  const finalRotation=
-    extraTurns + finalNormalized;
+  const normalizedTarget =
+    pointerAngle - targetAngle;
 
-  const startRotation=rotation;
+  /*
+    今の位置から自然につなぐ
+  */
 
-  const duration=7000;
+  const currentNormalized =
+    rotation % (Math.PI * 2);
 
-  const startTime=performance.now();
+  /*
+    差分
+  */
+
+  let delta =
+    normalizedTarget - currentNormalized;
+
+  /*
+    正方向だけ回す
+  */
+
+  while(delta < 0){
+    delta += Math.PI * 2;
+  }
+
+  /*
+    追加回転
+  */
+
+  const extraTurns =
+    (Math.PI * 2) * 8;
+
+  const finalRotation =
+    rotation + delta + extraTurns;
+
+  const startRotation = rotation;
+
+  const duration = 7000;
+
+  const startTime = performance.now();
 
   function animate(now){
 
-    let t=(now-startTime)/duration;
+    let t =
+      (now - startTime) / duration;
 
-    if(t>1) t=1;
+    if(t > 1) t = 1;
 
-    const eased=easeOutQuint(t);
+    const eased =
+      easeOutQuint(t);
 
-    rotation=
+    rotation =
       startRotation +
-      (finalRotation-startRotation)*eased;
+      (finalRotation - startRotation) * eased;
 
     drawWheel(rotation);
 
-    if(t<1){
+    if(t < 1){
 
       requestAnimationFrame(animate);
 
     }else{
 
-      rotation=finalRotation;
+      rotation = finalRotation;
 
       drawWheel(rotation);
 
-      // 完全一致判定
-      const normalized=
-      ((Math.PI - rotation)%(Math.PI*2)+(Math.PI*2))%(Math.PI*2);
+      /*
+        完全一致判定
+      */
 
-      const actualIndex=
-      Math.floor(normalized/arc)%items.length;
+      const normalized =
+        (
+          (pointerAngle - (rotation % (Math.PI * 2)))
+          + (Math.PI * 2)
+        ) % (Math.PI * 2);
 
-      resultBox.style.display="block";
+      const actualIndex =
+        Math.floor(normalized / arc) % items.length;
 
-      resultBox.style.background=colorMap[actualIndex];
+      resultBox.style.display = "block";
 
-      resultBox.textContent=items[actualIndex];
+      resultBox.style.background =
+        colorMap[actualIndex];
 
-      spinning=false;
+      resultBox.textContent =
+        items[actualIndex];
+
+      spinning = false;
+
     }
+
   }
 
   requestAnimationFrame(animate);
@@ -527,14 +317,11 @@ startBtn.addEventListener("click", ()=>{
 
 resetBtn.addEventListener("click", ()=>{
 
-  rotation=0;
+  rotation = 0;
 
-  resultBox.style.display="none";
+  resultBox.style.display = "none";
 
   drawWheel(rotation);
 
 });
 </script>
-
-</body>
-</html>
