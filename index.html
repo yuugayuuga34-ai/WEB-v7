@@ -178,7 +178,7 @@ startBtn.addEventListener("click", ()=>{
 
   spinning = true;
 
-  const arc = Math.PI * 2 / items.length;
+  const arc = (Math.PI * 2) / items.length;
 
   let winnerIndex;
 
@@ -201,56 +201,38 @@ startBtn.addEventListener("click", ()=>{
 
   /*
     針は左向き
-    = π rad
+    = Math.PI
   */
 
   const pointerAngle = Math.PI;
 
   /*
-    セグメント中央角度
+    狙う中心角
   */
 
   const targetAngle =
-    (winnerIndex * arc) + (arc / 2);
+    winnerIndex * arc + arc / 2;
 
   /*
-    最終回転角
+    完全一致用
   */
 
-  const normalizedTarget =
+  let finalRotation =
     pointerAngle - targetAngle;
 
   /*
-    今の位置から自然につなぐ
+    必ず前回より回す
   */
 
-  const currentNormalized =
-    rotation % (Math.PI * 2);
-
-  /*
-    差分
-  */
-
-  let delta =
-    normalizedTarget - currentNormalized;
-
-  /*
-    正方向だけ回す
-  */
-
-  while(delta < 0){
-    delta += Math.PI * 2;
+  while(finalRotation <= rotation){
+    finalRotation += Math.PI * 2;
   }
 
   /*
-    追加回転
+    さらに追加回転
   */
 
-  const extraTurns =
-    (Math.PI * 2) * 8;
-
-  const finalRotation =
-    rotation + delta + extraTurns;
+  finalRotation += Math.PI * 2 * 8;
 
   const startRotation = rotation;
 
@@ -285,17 +267,24 @@ startBtn.addEventListener("click", ()=>{
       drawWheel(rotation);
 
       /*
-        完全一致判定
+        結果判定
       */
 
-      const normalized =
+      const adjusted =
         (
-          (pointerAngle - (rotation % (Math.PI * 2)))
-          + (Math.PI * 2)
+          pointerAngle - rotation + Math.PI * 2
         ) % (Math.PI * 2);
 
-      const actualIndex =
-        Math.floor(normalized / arc) % items.length;
+      let actualIndex =
+        Math.floor(adjusted / arc);
+
+      if(actualIndex < 0){
+        actualIndex = 0;
+      }
+
+      if(actualIndex >= items.length){
+        actualIndex = items.length - 1;
+      }
 
       resultBox.style.display = "block";
 
